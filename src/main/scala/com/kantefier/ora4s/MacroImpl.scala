@@ -1,10 +1,11 @@
 package com.kantefier.ora4s
 
 import scala.reflect.macros.whitebox
-import scala.language.experimental.macros
 
 
 object MacroImpl {
+  import scala.language.experimental.macros
+
   class TableMacro(val c: whitebox.Context) {
     import c.universe._
 
@@ -160,35 +161,3 @@ object MacroImpl {
     }
   }
 }
-
-
-/*object MacroImpl {
-  def genCompanionMembers(className: Type.Name, params: Seq[Term.Param]): Term.Block = {
-    val paramsWithNames = params.map { param =>
-      val valName = param.name.value
-      val mods = Seq.empty
-      val patsnel = Seq(Pat.Var.Term(Term.Name(valName)))
-
-      q"..$mods val ..$patsnel = ${Lit.String(valName)}"
-    }
-
-    q"..$paramsWithNames"
-  }
-}*/
-
-/*
-class Table extends scala.annotation.StaticAnnotation {
-  inline def apply(defn: Any): Any = meta {
-    defn match {
-      case Term.Block(Seq(classDef: Defn.Class, compDef: Defn.Object)) =>
-        val valsBlock = MacroImpl.genCompanionMembers(classDef.name, classDef.ctor.paramss.head)
-        val compTempl = compDef.templ
-        val compStats = compTempl.stats.getOrElse(Seq.empty) ++ valsBlock.stats
-
-        Term.Block( Seq(classDef, compDef.copy(templ = compTempl.copy(stats = Some(compStats)))) )
-
-      case _ =>
-        abort("Didn't match :(")
-    }
-  }
-}*/

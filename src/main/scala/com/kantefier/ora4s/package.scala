@@ -1,15 +1,15 @@
 package com.kantefier
 
 import java.sql.{PreparedStatement, ResultSet}
-
 import scala.annotation.StaticAnnotation
+import scala.language.experimental.macros
 
 
 package object ora4s {
   type ResultSetParser[T] = ResultSet => T
 
   class DbTable(name: String) extends StaticAnnotation {
-//    def macroTransform(annottees: Any*): Any = macrh MacroImpl.TableMacro
+    def macroTransform(annottees: Any*): Any = macro MacroImpl.TableMacro.impl
   }
   class Field(dbName: String = "") extends StaticAnnotation
 
