@@ -15,13 +15,13 @@ object MacroImpl {
     val tableClassName: String = typeOf[Table].typeSymbol.name.toString
     val tableObjectName: String = typeOf[TableCompanion[_]].typeSymbol.name.toString
 
-    private val isEnumClass: (c.Tree => Boolean) = tpt =>
+    private val isEnumClass: c.Tree => Boolean = tpt =>
       c.typecheck(tpt, mode = c.TYPEmode, silent = true).tpe <:< typeOf[enumeratum.values.ValueEnumEntry[_]]
 
-    private val isStringEnum: (c.Tree => Boolean) = tpt =>
+    private val isStringEnum: c.Tree => Boolean = tpt =>
       c.typecheck(tpt, mode = c.TYPEmode, silent = true).tpe <:< typeOf[enumeratum.values.StringEnumEntry]
 
-    private val isIntEnum: (c.Tree => Boolean) = tpt =>
+    private val isIntEnum: c.Tree => Boolean = tpt =>
       c.typecheck(tpt, mode = c.TYPEmode, silent = true).tpe <:< typeOf[enumeratum.values.IntEnumEntry]
 
 
@@ -120,7 +120,22 @@ object MacroImpl {
              }
            """
 
-          //TODO: other cases
+          // err: not a case class
+        case (classDef @ q"$mods class $tpname[..$tparams] $ctorMods(...$paramss) extends { ..$earlydefns } with ..$parents { $self => ..$stats }")
+          :: q"$objMods object $objName extends { ..$objEarlyDefs } with ..$objParents { $objSelf => ..$objDefs }"
+          :: Nil =>
+          c.abort(classDef.pos, s"Can't generate code for $tpname: make it a case class first.")
+
+
+          // err: no companion object
+        case (classDef @ q"$mods class $tpname[..$tparams] $ctorMods(...$paramss) extends { ..$earlydefns } with ..$parents { $self => ..$stats }")
+          :: Nil =>
+          c.abort(classDef.pos, s"Can't generate code for $tpname: it should have a companion object.")
+
+          // err: something else?
+        case _ =>
+          c.abort(c.enclosingPosition, "Something went wrong.")
+
       }
 
       c.Expr[Any](result)

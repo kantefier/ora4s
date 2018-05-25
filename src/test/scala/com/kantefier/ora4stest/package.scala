@@ -1,7 +1,7 @@
 package com.kantefier
 
-import com.kantefier.ora4s._
 import enumeratum.values.{IntEnum, IntEnumEntry, StringEnum, StringEnumEntry}
+
 
 package object ora4stest {
   sealed abstract class CommChannel(val value: Int) extends IntEnumEntry
@@ -17,6 +17,4 @@ package object ora4stest {
     case object Email extends CommChannelStr("email")
     val values = findValues
   }
-
-
 }

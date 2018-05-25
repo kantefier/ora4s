@@ -20,7 +20,13 @@ trait BoundValue {
   val perform: PreparedStatement => PreparedStatement
 }
 
+/**
+  * Conversions-magnets for all those types that can be bound to a query
+  */
 object Bindable {
+  /**
+    * Primitives
+    */
   implicit def fromString(str: String): Bindable = new Bindable {
     def binder(idx: Int): PreparedStatement => Unit = _.setString(idx, str)
   }
@@ -31,6 +37,9 @@ object Bindable {
     def binder(idx: Int): PreparedStatement => Unit = _.setLong(idx, l)
   }
 
+  /**
+    * Blob
+    */
   implicit def fromByteArray(byteArr: Array[Byte]): Bindable = new Bindable {
     def binder(idx: Int): PreparedStatement => Unit = _.setBinaryStream(idx, new ByteArrayInputStream(byteArr))
   }
